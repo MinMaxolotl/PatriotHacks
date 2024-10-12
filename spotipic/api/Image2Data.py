@@ -1,5 +1,6 @@
 import numpy as np
 import skimage as ski
+from scipy.interpolate import interp1d
 from HSL import rgb_to_hsl
 from skimage.color import rgb2hsv
 from PIL import Image
@@ -16,7 +17,8 @@ def input_photo(input_name):
     return image
 
 # Test input_photo
-image = input_photo('max.png')
+# image = input_photo('max.jpg')
+
 # image_grey = ski.color.rgb2gray(image)
 # image_grey = ski.feature.canny(image_grey, 1)
 # display = Image.fromarray(image_grey)
@@ -40,7 +42,7 @@ def RGB_avg(image):
 
     return [red_avg, green_avg, blue_avg]
 
-print(RGB_avg(image))
+#print(RGB_avg(image))
     
 # Gathers HSV averages
 # Returns list of average values in format [HUE, SATURATION, VALUE]
@@ -74,6 +76,27 @@ def HSL_avg(image):
 
     return [hue_avg, saturation_avg, light_avg]
 
-print(HSV_avg(image))
+#print(HSV_avg(image))
 
+# Function to convert average values to spotify values
+# Returns feature values
+def photo2features(image):
+    img = input_photo(image)
+    r, g, b = RGB_avg(img)
+    h, s, v = HSV_avg(img)
+    
+    remap = interp1d([0,765],[0,1])
+    acoustincess = float(remap(abs(g+b-r)))
+    remap = interp1d([0,510],[0,1])
+    danceability = float(remap(v + s))
+    remap = interp1d([0, 870],[0,1])
+    energy = float(remap(abs(r + v - h)))
+    remap = interp1d([0, 1020],[0,1])
+    instrumentalness = float(remap(abs(v - s + g -r)))
+    remap = interp1d([0, 510],[0,1])
+    valence = float(remap(abs(v - b)))
 
+    return [acoustincess, danceability, energy, instrumentalness, valence]
+
+# Test photo2features
+# print(photo2features(image))

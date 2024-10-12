@@ -1,9 +1,20 @@
 import spotipy
-from spotipy.oauth2 import SpotifyOAuth
+import Authenticate
+from pymongo import MongoClient
+from Image2Data import photo2features
 
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="ee0276b06af14ed0b6d37d6b09b82957",
-                                               client_secret="1bb2f35b7b05486cabd9dd4baf85743b",
-                                               redirect_uri="http://localhost:1234",
-                                               scope="user-library-read"))
+# Import picture from API Call
 
-print(sp.audio_features('https://open.spotify.com/track/1YFoeeHQ7YIWqAqWbJoJLO?si=f9946c5a12e3476f'))
+
+# Connect to Spotify
+spotify = Authenticate.get_spotify()
+print("Spotify Connected!")
+
+# Connect to Database, look at the audio_features collection
+database = Authenticate.get_database()
+print("Database Connected!")
+song_collection = database['audio_features']
+
+song_details = song_collection.find()
+# for song in song_details:
+#    print(song['danceability'])
