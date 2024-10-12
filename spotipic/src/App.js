@@ -5,18 +5,13 @@ import ImageButton from './ImageButton.js';
 
 function App()
 {
-  // const [currentTime, setCurrentTime] = useState(0);
-  // useEffect(() =>
-  // {
-  //   fetch('/time').then(res => res.json()).then(data =>
-  //   {
-  //     setCurrentTime(data.time);
-  //   })
-  // }, [])
-
+  // Model Starts Here
   const [isImgAdded, setIsImageAdded] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState('');
+
+
+  // Controller starts here
 
   // Handle file input change
   const handleFileChange = (event) =>
@@ -35,7 +30,6 @@ function App()
       alert("Please select an image before uploading.");
       return;
     }
-
     const formData = new FormData();
     formData.append('image', selectedFile);
 
@@ -56,12 +50,7 @@ function App()
       setUploadStatus('Upload failed!');
     }
   };
-  // Controller starts here
 
-  function handleIsImgAdded()
-  {
-    setIsImageAdded(current => !current);
-  }
 
   // View starts here
   return (
