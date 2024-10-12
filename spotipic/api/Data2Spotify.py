@@ -1,10 +1,15 @@
 import spotipy
+import sys
 import Authenticate
 from pymongo import MongoClient
 from Image2Data import photo2features
 
-# Import picture from API Call
+# Import image path from API Call
+image_path = sys.argv[1]
 
+# Turn image into data
+# Outputs Acousticness, Danceability, Energy, Instrumentalness, and Valence
+a,d,e,i,v = photo2features(image_path)
 
 # Connect to Spotify
 spotify = Authenticate.get_spotify()
