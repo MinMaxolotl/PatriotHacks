@@ -55,7 +55,7 @@ function App()
 
     trackRef.current.animate(
       {
-        transform: `translate(${nextPercentage}%, -50%)`,
+        transform: `translate(${nextPercentage - 5.5}%, -20%)`,
       },
       { duration: 1200, fill: "forwards" }
     );
@@ -134,36 +134,36 @@ function App()
 
   return (
     <div className="App" id="background-gradient">
-      <Header textp="Turn an image into a song!" />
+      <Header textp="Upload an image to turn it into a song!" />
 
-      {/* Image upload input */}
-      <input type="file" onChange={handleFileChange} />
       <div className="inputs">
+        <input type="file" onChange={handleFileChange} />
         {isImgAdded && (
           <button onClick={handleUpload}>Upload Image</button>
         )}
-        {/* Display upload status */}
         {uploadStatus && <p>{uploadStatus}</p>}
       </div>
 
       {/* Image track */}
-      <div
-        id="image-track"
-        ref={trackRef}
-        data-mouse-down-at="0"
-        data-prev-percentage="0"
-      >
-        <img className="image" src={i1} draggable="false" alt="1" />
-        <img className="image" src={i2} draggable="false" alt="2" />
-        <img className="image" src={i3} draggable="false" alt="3" />
-        <img className="image" src={i4} draggable="false" alt="4" />
-        <img className="image" src={i5} draggable="false" alt="5" />
-        <img className="image" src={i6} draggable="false" alt="6" />
-        <img className="image" src={i7} draggable="false" alt="7" />
-        <img className="image" src={i8} draggable="false" alt="8" />
-        <img className="image" src={i9} draggable="false" alt="9" />
-        <img className="image" src={i10} draggable="false" alt="10" />
-      </div>
+      {isImgAdded && (
+        <div
+          id="image-track"
+          ref={trackRef}
+          data-mouse-down-at="0"
+          data-prev-percentage="0"
+        >
+          <img className="image" src={i1} draggable="false" alt="1" />
+          <img className="image" src={i2} draggable="false" alt="2" />
+          <img className="image" src={i3} draggable="false" alt="3" />
+          <img className="image" src={i4} draggable="false" alt="4" />
+          <img className="image" src={i5} draggable="false" alt="5" />
+          <img className="image" src={i6} draggable="false" alt="6" />
+          <img className="image" src={i7} draggable="false" alt="7" />
+          <img className="image" src={i8} draggable="false" alt="8" />
+          <img className="image" src={i9} draggable="false" alt="9" />
+          <img className="image" src={i10} draggable="false" alt="10" />
+        </div>
+      )}
     </div>
   );
 }
