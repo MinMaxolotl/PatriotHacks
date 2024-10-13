@@ -1,7 +1,7 @@
 import numpy as np
 import skimage as ski
 from scipy.interpolate import interp1d
-from HSL import rgb_to_hsl
+# from HSL import rgb_to_hsl
 from skimage.color import rgb2hsv
 from PIL import Image
 
@@ -57,24 +57,24 @@ def HSV_avg(image):
 # Gathers HSL averages
 # Returns list of average values in format [HUE, LIGHT, SATURATION]
 # Significantly slower than HSV. Not primarily used
-def HSL_avg(image):
-    hsl_img = np.zeros_like(image)
-    num_rows = image.shape[0]
-    num_cols = image.shape[1]
+# def HSL_avg(image):
+#     hsl_img = np.zeros_like(image)
+#     num_rows = image.shape[0]
+#     num_cols = image.shape[1]
     
-    for row in range(num_rows):
-        for col in range(num_cols):
-            ONE_255 = 1.0 / 255.0
-            h, s, l = rgb_to_hsl(image[row, col, 0] * ONE_255, image[row, col, 1] * ONE_255, image[row, col, 2] * ONE_255)
-            hsl_img[row, col, 0] = (h / ONE_255)
-            hsl_img[row, col, 1] = (s / ONE_255)
-            hsl_img[row, col, 2] = (l / ONE_255)
+#     for row in range(num_rows):
+#         for col in range(num_cols):
+#             ONE_255 = 1.0 / 255.0
+#             h, s, l = rgb_to_hsl(image[row, col, 0] * ONE_255, image[row, col, 1] * ONE_255, image[row, col, 2] * ONE_255)
+#             hsl_img[row, col, 0] = (h / ONE_255)
+#             hsl_img[row, col, 1] = (s / ONE_255)
+#             hsl_img[row, col, 2] = (l / ONE_255)
 
-    hue_avg = hsl_img[:,:,0].mean()
-    saturation_avg = hsl_img[:,:,1].mean()
-    light_avg = hsl_img[:,:,2].mean()
+#     hue_avg = hsl_img[:,:,0].mean()
+#     saturation_avg = hsl_img[:,:,1].mean()
+#     light_avg = hsl_img[:,:,2].mean()
 
-    return [hue_avg, saturation_avg, light_avg]
+#     return [hue_avg, saturation_avg, light_avg]
 
 #print(HSV_avg(image))
 
@@ -84,19 +84,21 @@ def photo2features(image):
     img = input_photo(image)
     r, g, b = RGB_avg(img)
     h, s, v = HSV_avg(img)
-    
-    remap = interp1d([0,765],[0,1])
-    acoustincess = float(remap(abs(g+b-r)))
-    remap = interp1d([0,510],[0,1])
-    danceability = float(remap(v + s))
-    remap = interp1d([0, 870],[0,1])
-    energy = float(remap(abs(r + v - h)))
-    remap = interp1d([0, 1020],[0,1])
-    instrumentalness = float(remap(abs(v - s + g -r)))
-    remap = interp1d([0, 510],[0,1])
-    valence = float(remap(abs(v - b)))
 
-    return [acoustincess, danceability, energy, instrumentalness, valence]
+    color_features = np.array([r,g,b,h,s,v])
+    
+    remap =             interp1d([0,765],[0,1])
+    acoustincess =      float(remap(max(0.000001, g + b - r)))
+    remap =             interp1d([0,510],[0,1])
+    danceability =      float(remap(max(0.000001, v + s)))
+    remap =             interp1d([0, 870],[0,1])
+    energy =            float(remap(max(0.000001, r + v - h)))
+    remap =             interp1d([0, 1020],[0,1])
+    instrumentalness =  float(remap(max(0.000001, v - s + g -r)))
+    remap =             interp1d([0, 510],[0,1])
+    valence =           float(remap(max(0.000001, v - b)))
+
+    return np.array([acoustincess, danceability, energy, instrumentalness, valence]), color_features
 
 # Test photo2features
 # print(photo2features(image))
