@@ -7,20 +7,43 @@
   overflow: hidden;
 }
 
-#image-track {
+/* #image-track {
   display: flex;
-  gap: 2vmin;
+  gap: 4vmin;
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-5.5%, -20%);
+  transform: translate(0%, -20%);
   user-select: none;
-  /* -- Prevent image highlighting -- */
+} */
+
+#image-track {
+  display: flex;
+  gap: 2vmin;
+  /* Space between images */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(0%, -20%);
+  user-select: none;
+  transition: transform 1s ease;
+  /* Disable interactions with track */
 }
 
 #image-track>.image {
   width: 40vmin;
   height: 56vmin;
   object-fit: cover;
-  object-position: 10 center;
+  object-position: center;
+}
+
+#image-track .time {
+  position: relative;
+}
+
+#image-track .time2 {
+  width: 40vmin;
+  height: 56vmin;
+  object-fit: cover;
+  /* Ensure images cover the space */
 }

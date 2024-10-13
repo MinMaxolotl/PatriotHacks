@@ -1,16 +1,15 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
 import os
-import subprocess  # Import subprocess to run external scripts
+import subprocess
+import json
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-# Path to save uploaded images
 UPLOAD_FOLDER = './uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Ensure the upload directory exists
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
@@ -20,10 +19,8 @@ def upload_image():
     if 'image' not in request.files:
         return jsonify({"error": "No image part in the request"}), 400
 
-    # Get the uploaded image file
     image = request.files['image']
 
-    # If the filename is empty, return an error
     if image.filename == '':
         return jsonify({"error": "No selected image"}), 400
 
@@ -31,28 +28,38 @@ def upload_image():
     image_path = os.path.join(app.config['UPLOAD_FOLDER'], image.filename)
     image.save(image_path)
 
-    # After saving the image, call the external Python script (test.py)
     try:
+        # Run the external Python script and capture the output
         result = subprocess.run(
-            ['python3', 'test.py', image_path],  # Command to run the script with the image path
-            capture_output=True,  # Capture stdout and stderr
-            text=True  # Get the output as a string (not bytes)
+            ['python3', 'Data2Spotify.py', image_path],  # Command to run the script with the image path
+            capture_output=True,
+            text=True
         )
 
-        # Check if the subprocess returned an error
         if result.returncode != 0:
-            return jsonify({"error": "Failed to process the image", "details": result.stderr}), 500
+            return jsonify({
+                "error": "Failed to process the image",
+                "stderr": result.stderr  # Return stderr for debugging
+            }), 500
 
-        # Return the result of the subprocess
+        # Now we expect the output from the subprocess to be JSON formatted
+        try:
+            data = json.loads(result.stdout)  # Parse the output into a JSON object
+        except json.JSONDecodeError:
+            return jsonify({
+                "error": "Output from the image processing script is not valid JSON",
+                "stdout": result.stdout
+            }), 500
+
         return jsonify({
             "message": "Image uploaded and processed successfully",
             "image_path": image_path,
-            "output": result.stdout  # Output from test.py
+            "mapThisString": data  # Send the parsed JSON as part of the response
         }), 200
 
     except Exception as e:
-        # If an error occurs while running the subprocess, return an error response
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
